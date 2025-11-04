@@ -1,28 +1,60 @@
-public class Main {
+import java.io.IOException;
+import java.util.Map;
 
+
+public class Main {
     public static void main(String[] args) {
+        ArchivioEsperimenti archivio = new ArchivioEsperimenti();
+        MappeScoperte scoperte = new MappeScoperte();
 
         try {
-            // Creazione di alcuni esperimenti
-            EsperimentoCollisione collisione1 = new EsperimentoCollisione("Collisione_A", 13.0, 1000000);
-            EsperimentoCollisione collisione2 = new EsperimentoCollisione("Collisione_B", 7.0, 500000);
+            // Creazione esperimenti
+            EsperimentoCollisione e1 = new EsperimentoCollisione("Collisione LHC", 13.6, 1000);
+            EsperimentoCollisione e2 = new EsperimentoCollisione("Collisione ATLAS", 14.0, 1200);
 
-            EsperimentoRilevamento rilevamento1 = new EsperimentoRilevamento("Rilevamento_Muoni", 13.0, "muone");
-            EsperimentoSimulazione simulazione1 = new EsperimentoSimulazione("Simulazione_Higgs", 14.0, 2023);
+            EsperimentoRilevamento e3 = new EsperimentoRilevamento("Rilevamento Muone", 7.0, "muone");
+            EsperimentoRilevamento e4 = new EsperimentoRilevamento("Rilevamento Fotone", 8.0, "fotone");
 
-            // Creazione dell'archivio esperimenti
-            ArchivioEsperimenti archivio = new ArchivioEsperimenti();
+            EsperimentoSimulazione e5 = new EsperimentoSimulazione("Simulazione Bosone", 10.0, 2022);
+            EsperimentoSimulazione e6 = new EsperimentoSimulazione("Simulazione Quark", 9.5, 2023);
 
-            // Aggiunta degli esperimenti all'archivio
-            archivio.aggiungiEsperimento(collisione1);
-            archivio.aggiungiEsperimento(collisione2);
-            archivio.aggiungiEsperimento(rilevamento1);
-            archivio.aggiungiEsperimento(simulazione1);
-;
+            // Aggiunta all'archivio
+            archivio.aggiungiEsperimento(e1);
+            archivio.aggiungiEsperimento(e2);
+            archivio.aggiungiEsperimento(e3);
+            archivio.aggiungiEsperimento(e4);
+            archivio.aggiungiEsperimento(e5);
+            archivio.aggiungiEsperimento(e6);
 
-        } catch (DatiEsperimentoNonValidiException e) {
-            System.err.println("Errore nella creazione di un esperimento: " + e.getMessage());
+            // Salvataggio su file
+            archivio.salvaSuFile("archivio.cern");
+
+            // Caricamento da file
+            ArchivioEsperimenti archivioCaricato = new ArchivioEsperimenti();
+            archivioCaricato.caricaDaFile("archivio.cern");
+
+            // Aggiunta scoperte note
+            scoperte.aggiungiScoperta("Bosone di Higgs", e5);
+            scoperte.aggiungiScoperta("Antimateria", e1);
+
+            // Stampa contenuto archivio
+            System.out.println("Contenuto Archivio Esperimenti");
+            for (Esperimento e : archivioCaricato.ricercaEsperimentoDaEnergia(10)) {
+                System.out.println(e.descrizione());
+            }
+
+            // Stampa scoperte in modo corretto
+            System.out.println("\nScoperte Note");
+            for (Map.Entry<String, Esperimento> entry : scoperte.getMappa().entrySet()) {
+                String particella = entry.getKey();
+                Esperimento esperimento = entry.getValue();
+                System.out.println(particella + " - " + esperimento.descrizione());
+            }
+
+        } catch (DatiEsperimentoNonValidiException ex) {
+            System.err.println("Errore dati esperimento: " + ex.getMessage());
         }
+
 
     }
 }

@@ -1,13 +1,9 @@
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-public class ArchivioEsperimenti {
-    private List<Esperimento> esperimenti;
+public class ArchivioEsperimenti implements Serializable {
 
-    public ArchivioEsperimenti() {
-        this.esperimenti = new ArrayList<>();
-    }
+    private List<Esperimento> esperimenti = new ArrayList<>();
 
     public void aggiungiEsperimento(Esperimento e) {
         esperimenti.add(e);
@@ -17,28 +13,48 @@ public class ArchivioEsperimenti {
         esperimenti.remove(e);
     }
 
+    public List<Esperimento> getEsperimenti() {
+        return esperimenti;
+    }
+
     public int dimensione() {
         return esperimenti.size();
     }
 
-    //con questo salvo su file (Serializza)
-    public void salvaSuFile(String file) throws IOException {
-        try (ObjectOutputStream oos = new ObjectOutputStream(
-                new BufferedOutputStream(new FileOutputStream(file)))) {
-            oos.writeObject(this);
+    public List<Esperimento> ricercaEsperimentoDaEnergia(double energia) {
+        List<Esperimento> risultati = new ArrayList<>();
+        double min = energia * 0.9;
+        double max = energia * 1.1;
+        for (Esperimento e : esperimenti) {
+            if (e.getEnergia() >= min && e.getEnergia() <= max) {
+                risultati.add(e);
+            }
+        }
+        return risultati;
+    }
+
+    public void salvaSuFile(String nomeFile) {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(nomeFile))) {
+            out.writeObject(this);
         } catch (IOException e) {
-            System.out.println("Errore: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    //Deserializza
-    public static ArchivioEsperimenti caricaDaFile(String file) throws IOException, ClassNotFoundException {
-        try (ObjectInputStream ois = new ObjectInputStream(
-                new BufferedInputStream(new FileInputStream(file)))) {
-            Object obj = ois.readObject();
-        } catch (IOException e) {
-            System.out.println("Errore: " + e.getMessage());
+    public static ArchivioEsperimenti caricaDaFile(String nomeFile) {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(nomeFile))) {
+            return (ArchivioEsperimenti) in.readObject();
+        } catch (Exception e) {
+            return new ArchivioEsperimenti();
         }
-        return null;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("Archivio esperimenti:\n");
+        for (Esperimento e : esperimenti) {
+            sb.append("- ").append(e.descrizione()).append("\n");
+        }
+        return sb.toString();
     }
 }

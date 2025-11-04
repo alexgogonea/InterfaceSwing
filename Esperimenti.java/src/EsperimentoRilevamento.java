@@ -2,12 +2,11 @@ class EsperimentoRilevamento extends Esperimento {
 
     private String tipoParticella;
 
-
-
-    public EsperimentoRilevamento(String nome, double energia, String tipoParticella) throws DatiEsperimentoNonValidiException {
+    public EsperimentoRilevamento(String nome, double energia, String tipoParticella)
+            throws DatiEsperimentoNonValidiException {
         super(nome, energia);
         if (tipoParticella == null || tipoParticella.trim().isEmpty()) {
-            throw new DatiEsperimentoNonValidiException("Devi mettere il tipo di particella");
+            throw new DatiEsperimentoNonValidiException("Tipo particella non valido");
         }
         this.tipoParticella = tipoParticella;
     }
@@ -17,8 +16,8 @@ class EsperimentoRilevamento extends Esperimento {
     }
 
     @Override
-    //stampo
     public String descrizione() {
-        return String.format("%s, Energia: %.2f TeV, Particella: %s", getNome(), getEnergia(), tipoParticella);
+        return String.format("Nome: %s, Energia: %.2f TeV, Particella: %s",
+                getNome(), getEnergia(), tipoParticella);
     }
 }
