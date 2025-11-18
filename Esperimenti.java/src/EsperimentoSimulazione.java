@@ -1,23 +1,22 @@
-class EsperimentoSimulazione extends Esperimento {
 
-    private int annoSimulazione;
+public class EsperimentoSimulazione extends Esperimento {
+    public int annoSimulazione ;
+    public EsperimentoSimulazione(String nome, double energia, int annoSimulazione) throws DatiEsperimentoNonValidiException {
+        super( nome,  energia);
+        this.annoSimulazione  = annoSimulazione ;
 
-    public EsperimentoSimulazione(String nome, double energia, int annoSimulazione)
-            throws DatiEsperimentoNonValidiException {
-        super(nome, energia);
-        if (annoSimulazione < 0) {
-            throw new DatiEsperimentoNonValidiException("Anno simulazione non valido");
-        }
-        this.annoSimulazione = annoSimulazione;
     }
 
-    public int getAnnoSimulazione() {
-        return annoSimulazione;
-    }
+    public String descrizione(){
+        StringBuilder stringa = new StringBuilder();
+        stringa.append("Nome: ");
+        stringa.append(nome);
+        stringa.append(", Anno di Simulazione: ");
+        stringa.append(annoSimulazione );
+        stringa.append(", Energia: ");
+        stringa.append(energia);
+        stringa.append("TeV");
 
-    @Override
-    public String descrizione() {
-        return String.format("Nome: %s, Anno: %d, Energia: %.2f TeV",
-                getNome(), annoSimulazione, getEnergia());
+        return stringa.toString();
     }
 }

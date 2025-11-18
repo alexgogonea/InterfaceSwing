@@ -1,60 +1,71 @@
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Iterator;
 
 public class ArchivioEsperimenti implements Serializable {
+    private List<Esperimento> lista;
 
-    private List<Esperimento> esperimenti = new ArrayList<>();
-
-    public void aggiungiEsperimento(Esperimento e) {
-        esperimenti.add(e);
+    public ArchivioEsperimenti() {
+        lista = new ArrayList();
     }
 
-    public void rimuoviEsperimento(Esperimento e) {
-        esperimenti.remove(e);
+    public void aggiungiEsperimento(Esperimento esperimento) {
+        lista.add(esperimento);
     }
 
-    public List<Esperimento> getEsperimenti() {
-        return esperimenti;
+    public void rimuoviEsperimento(int index) {
+        lista.remove(index);
     }
 
     public int dimensione() {
-        return esperimenti.size();
+        return lista.size();
     }
 
-    public List<Esperimento> ricercaEsperimentoDaEnergia(double energia) {
-        List<Esperimento> risultati = new ArrayList<>();
-        double min = energia * 0.9;
-        double max = energia * 1.1;
-        for (Esperimento e : esperimenti) {
-            if (e.getEnergia() >= min && e.getEnergia() <= max) {
-                risultati.add(e);
-            }
+    public Iterator<Esperimento> iterator() {
+        return lista.iterator();
+    }
+
+    public Esperimento getEsperimento(int index) {
+        if (index >= 0 && index < lista.size()) {
+            return lista.get(index);
         }
-        return risultati;
+        return null;
     }
 
-    public void salvaSuFile(String nomeFile) {
+    public List<Esperimento> getListaEsperimenti() {
+        return new ArrayList<>(lista);
+    }
+
+    public void salvaSuFile(String nomeFile) throws IOException {
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(nomeFile))) {
             out.writeObject(this);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
-    public static ArchivioEsperimenti caricaDaFile(String nomeFile) {
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(nomeFile))) {
+    public ArchivioEsperimenti caricaDaFile(String nomeFile) throws IOException {
+        try {
+            ObjectInputStream in = new ObjectInputStream(new FileInputStream(nomeFile));
             return (ArchivioEsperimenti) in.readObject();
-        } catch (Exception e) {
-            return new ArchivioEsperimenti();
+        } catch (IOException |ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder("Archivio esperimenti:\n");
-        for (Esperimento e : esperimenti) {
-            sb.append("- ").append(e.descrizione()).append("\n");
+    //ricercaEsperimentoDaEnergia: ritorna una lista di esperimenti che hanno una data energia ± 10%
+    public ArchivioEsperimenti ricercaEsperimentoDaEnergia(double energiaTarget) {
+        ArchivioEsperimenti risultato = new ArchivioEsperimenti();
+        double tolleranza = energiaTarget * 0.10; // ±10%
+        double minEnergia = energiaTarget - tolleranza;
+        double maxEnergia = energiaTarget + tolleranza;
+
+        for (Esperimento esperimento : lista) {
+            if (esperimento.energia >= minEnergia && esperimento.energia <= maxEnergia) {
+                risultato.aggiungiEsperimento(esperimento);
+            }
         }
-        return sb.toString();
+        return risultato;
     }
 }

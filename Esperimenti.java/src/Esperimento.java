@@ -1,33 +1,21 @@
 import java.io.Serializable;
+//classe padre Esperimento
+public abstract class Esperimento implements Serializable {
+    protected String nome;
+    protected double energia;
 
-abstract class Esperimento implements Serializable {
-
-    private String nome;
-    private double energia;
-
-    public Esperimento(String nome, double energia) throws DatiEsperimentoNonValidiException {
-        if (nome == null || nome.trim().isEmpty()) {
-            throw new DatiEsperimentoNonValidiException("Il nome non può essere vuoto");
-        }
-        if (energia <= 0) {
-            throw new DatiEsperimentoNonValidiException("L’energia deve essere > 0");
-        }
+    //costruttore che lancia DatiEsperimentoNonValidiException se il nome è vuoto o se l'energia è minore di 0
+    public Esperimento(String nome, double energia ) throws DatiEsperimentoNonValidiException {
         this.nome = nome;
         this.energia = energia;
+        if(nome == ""){
+            throw new DatiEsperimentoNonValidiException();
+        }
+        if(energia <= 0){
+            throw new DatiEsperimentoNonValidiException();
+        }
     }
 
-    public String getNome() {
-        return nome;
-    }
-
-    public double getEnergia() {
-        return energia;
-    }
-
+    //firma del metodo descrizione
     public abstract String descrizione();
-
-    @Override
-    public String toString() {
-        return descrizione();
-    }
 }

@@ -1,6 +1,8 @@
-//classe con la quale se non metto dei dati richiesti mi lancia un'eccezione
+//evento DatiEsperimentoNonValidiException
+
 public class DatiEsperimentoNonValidiException extends Exception {
-    public DatiEsperimentoNonValidiException(String messaggio) {
-        super(messaggio);
+    public DatiEsperimentoNonValidiException() {}
+    public DatiEsperimentoNonValidiException(String message) {
+        super(message);
     }
 }
