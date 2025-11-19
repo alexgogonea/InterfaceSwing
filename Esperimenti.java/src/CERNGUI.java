@@ -254,7 +254,7 @@ public class CERNGUI extends JFrame {
             java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
 
             JOptionPane.showMessageDialog(this,
-                    "Mappa dell'Istituto Tecnico Statale Alessandro Rossi aperta nel browser!");
+                    "Mappa dell'Istituto Tecnico Statale Alessandro Rossi aperta nel browser");
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
