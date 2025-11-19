@@ -5,7 +5,6 @@ import java.awt.*;
 import java.io.IOException;
 
 public class CERNGUI extends JFrame {
-
     private ArchivioEsperimenti archivio;
     private MappaScoperte scoperte;
     private DefaultListModel<String> listaEsperimentiModel;
@@ -40,7 +39,7 @@ public class CERNGUI extends JFrame {
         // Pannello principale diviso in due
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 creaPannelloEsperimenti(), creaPannelloPreferiti());
-        splitPane.setResizeWeight(0.5);
+        splitPane.setResizeWeight(0.5); // Divide equamente lo spazio
 
         add(splitPane, BorderLayout.CENTER);
         add(creaPannelloControlli(), BorderLayout.SOUTH);
@@ -53,6 +52,7 @@ public class CERNGUI extends JFrame {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createTitledBorder("Archivio Esperimenti"));
 
+        // Configurazione lista esperimenti
         listaEsperimenti.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         listaEsperimenti.addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -67,7 +67,9 @@ public class CERNGUI extends JFrame {
             }
         });
 
-        panel.add(new JScrollPane(listaEsperimenti), BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane(listaEsperimenti);
+        panel.add(scrollPane, BorderLayout.CENTER);
+
         return panel;
     }
 
@@ -75,6 +77,7 @@ public class CERNGUI extends JFrame {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createTitledBorder("Scoperte Preferite"));
 
+        // Configurazione lista preferiti
         listaPreferiti.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         listaPreferiti.addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -92,7 +95,9 @@ public class CERNGUI extends JFrame {
             }
         });
 
-        panel.add(new JScrollPane(listaPreferiti), BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane(listaPreferiti);
+        panel.add(scrollPane, BorderLayout.CENTER);
+
         return panel;
     }
 
@@ -104,15 +109,21 @@ public class CERNGUI extends JFrame {
         JButton btnAggiungi = new JButton("Nuovo Esperimento");
         JButton btnAggiungiPreferito = new JButton("Aggiungi ai Preferiti");
         JButton btnRimuoviPreferito = new JButton("Rimuovi dai Preferiti");
-        JButton btnMappa = new JButton("Mostra Mappa");
 
+        // Pulsante mappa senza emoji
+        JButton btnMappa = new JButton("Mostra Mappa Istituto");
+
+        // ActionListener esistenti
         btnCarica.addActionListener(e -> caricaDati());
         btnSalva.addActionListener(e -> salvaDati());
         btnAggiungi.addActionListener(e -> nuovoEsperimento());
         btnAggiungiPreferito.addActionListener(e -> aggiungiAiPreferiti());
         btnRimuoviPreferito.addActionListener(e -> rimuoviDaiPreferiti());
-        btnMappa.addActionListener(e -> mostraMappa());
 
+        // Action listener per la mappa
+        btnMappa.addActionListener(e -> mostraMappaCERN());
+
+        // Aggiungi tutti i pulsanti al pannello
         panel.add(btnCarica);
         panel.add(btnSalva);
         panel.add(btnAggiungi);
@@ -125,7 +136,7 @@ public class CERNGUI extends JFrame {
 
     private void caricaDatiIniziali() {
         try {
-            // Esperimenti di esempio
+            // Creazione esperimenti di esempio
             EsperimentoCollisione collisione1 = new EsperimentoCollisione("LHC Run 1", 8.0, 1000000);
             EsperimentoCollisione collisione2 = new EsperimentoCollisione("LHC Run 2", 13.0, 2500000);
             EsperimentoRilevamento rilevamento1 = new EsperimentoRilevamento("CMS", 13.6, "Bosone di Higgs");
@@ -133,6 +144,7 @@ public class CERNGUI extends JFrame {
             EsperimentoSimulazione simulazione1 = new EsperimentoSimulazione("Big Bang Sim", 14.0, 2023);
             EsperimentoSimulazione simulazione2 = new EsperimentoSimulazione("Early Universe", 10.0, 2024);
 
+            // Aggiunta all'archivio
             archivio.aggiungiEsperimento(collisione1);
             archivio.aggiungiEsperimento(collisione2);
             archivio.aggiungiEsperimento(rilevamento1);
@@ -140,6 +152,7 @@ public class CERNGUI extends JFrame {
             archivio.aggiungiEsperimento(simulazione1);
             archivio.aggiungiEsperimento(simulazione2);
 
+            // Aggiunta preferiti
             scoperte.aggiungiScoperta("Bosone di Higgs", rilevamento1);
             scoperte.aggiungiScoperta("Antimateria", collisione1);
             scoperte.aggiungiScoperta("Quark Top", rilevamento2);
@@ -155,11 +168,13 @@ public class CERNGUI extends JFrame {
         listaEsperimentiModel.clear();
         listaPreferitiModel.clear();
 
+        // Aggiorna lista esperimenti
         for (int i = 0; i < archivio.dimensione(); i++) {
             Esperimento exp = archivio.getEsperimento(i);
             listaEsperimentiModel.addElement(exp.descrizione());
         }
 
+        // Aggiorna lista preferiti
         for (String chiave : scoperte.elencoChiavi()) {
             listaPreferitiModel.addElement(chiave);
         }
@@ -175,6 +190,7 @@ public class CERNGUI extends JFrame {
         }
     }
 
+    // Metodi per le azioni (da implementare)
     private void caricaDati() {
         JOptionPane.showMessageDialog(this, "Funzione Carica Dati - Da implementare");
     }
@@ -220,11 +236,34 @@ public class CERNGUI extends JFrame {
         }
     }
 
-    private void mostraMappa() {
-        SwingUtilities.invokeLater(MappaViewer::new);
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new CERNGUI().setVisible(true);
+            }
+        });
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new CERNGUI().setVisible(true));
+    private void mostraMappaCERN() {
+        try {
+            // URL più preciso per l'Istituto Tecnico Alessandro Rossi Vicenza
+            String url = "https://www.google.com/maps/place/Istituto+Tecnico+Statale+Alessandro+Rossi/@45.553889,11.551667,17z/data=!3m1!4b1!4m6!3m5!1s0x477f4e46558305a5:0x4ed4a8e223c9c1a2!8m2!3d45.553889!4d11.551667!16s%2Fg%2F1td63t_5?entry=ttu";
+
+            // Apri nel browser predefinito
+            java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
+
+            JOptionPane.showMessageDialog(this,
+                    "Mappa dell'Istituto Tecnico Statale Alessandro Rossi aperta nel browser!");
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Impossibile aprire la mappa automaticamente.\n" +
+                            "Apri manualmente questo link:\n" +
+                            "https://www.google.com/maps/place/Istituto+Tecnico+Statale+Alessandro+Rossi+Vicenza");
+        }
     }
+
+
+
 }
