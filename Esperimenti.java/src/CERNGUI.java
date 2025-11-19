@@ -258,7 +258,7 @@ public class CERNGUI extends JFrame {
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
-                    "Impossibile aprire la mappa automaticamente.\n" +
+                    "Impossibile aprire la mappa automaticamente\n" +
                             "Apri manualmente questo link:\n" +
                             "https://www.google.com/maps/place/Istituto+Tecnico+Statale+Alessandro+Rossi+Vicenza");
         }
